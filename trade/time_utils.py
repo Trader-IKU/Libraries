@@ -154,4 +154,12 @@ class TimeUtils:
             return (end - begin + 1, begin, end)
         else:
             return (0, None, None)
-    
+        
+    @staticmethod
+    def slice(dic, time, time_from, time_to):
+        n, begin, end = TimeUtils.sliceTime(time, time_from, time_to)
+        if n > 0:
+            
+        
+        
+        

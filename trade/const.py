@@ -13,6 +13,8 @@ class Const:
     CLOSE = 'close'
     VOLUME = 'volume'
     PRICE = 'price'
+    MID = 'mid'
+    POLARITY = 'polarity'
     
     TimeUnit = str
     UNIT_MINUTE:TimeUnit = 'MINUTE'
