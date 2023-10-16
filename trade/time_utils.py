@@ -146,8 +146,8 @@ class TimeUtils:
                 if t >= time_from:
                     begin = i
             else:
-                if t > time_to:
-                    end = i
+                if t >= time_to:
+                    end = i - 1
                     return (end - begin + 1, begin, end)
         if begin is not None:
             end = len(pytime_array) - 1
@@ -158,7 +158,12 @@ class TimeUtils:
     @staticmethod
     def slice(dic, time, time_from, time_to):
         n, begin, end = TimeUtils.sliceTime(time, time_from, time_to)
-        if n > 0:
+        if n == 0:
+            return n, None
+        out = {}
+        for key, value in dic.items():
+            out[key] = value[begin: end + 1]
+        return n, out
             
         
         
