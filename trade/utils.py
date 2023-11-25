@@ -204,6 +204,12 @@ class Utils:
             for array in tohlcv:
                 out.append(array[begin: end + 1])
             return out
+    @staticmethod                
+    def sliceBetween(data: dict, pytime_array: list, time_from, time_to):
+        n, begin, end = TimeUtils.sliceTime(pytime_array, time_from, time_to)
+        d = Utils.sliceDic(data, begin, end)
+        a = d[list(d.keys())[0]]
+        return len(a), d
         
     @staticmethod        
     def sliceDic(dic, begin, end):
