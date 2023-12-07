@@ -80,11 +80,19 @@ class TimeUtils:
         return naive
 
     @staticmethod
-    def isSummerTime(date_time):
-        day0 = TimeUtils.dayOfSunday(date_time.year, 3, 2)
-        tsummer0 = TimeUtils.utcTime(date_time.year, 3, day0, 0, 0, 0)
-        day1 = TimeUtils.dayOfSunday(date_time.year, 10, 2)
-        tsummer1 = TimeUtils.utcTime(date_time.year, 10, day1, 0, 0, 0)
+    def delta_hour_from_gmt(date_time, begin_month, begin_sunday, end_month, end_sunday, delta_hour_from_gmt_in_summer):
+        if TimeUtils.isSummerTime(date_time, begin_month, begin_sunday, end_month, end_sunday):
+            dt = timedelta(hours=delta_hour_from_gmt_in_summer)
+        else:
+            dt = timedelta(hours=delta_hour_from_gmt_in_summer- 1)
+        return dt
+    
+    @staticmethod
+    def isSummerTime(date_time, begin_month, begin_sunday, end_month, end_sunday):
+        day0 = TimeUtils.dayOfSunday(date_time.year, begin_month, begin_sunday)
+        tsummer0 = TimeUtils.utcTime(date_time.year, begin_month, day0, 0, 0, 0)
+        day1 = TimeUtils.dayOfSunday(date_time.year, end_month, end_sunday)
+        tsummer1 = TimeUtils.utcTime(date_time.year, end_month, day1, 0, 0, 0)
         if date_time > tsummer0 and date_time < tsummer1:
             return True
         else:
