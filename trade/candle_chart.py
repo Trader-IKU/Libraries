@@ -191,7 +191,7 @@ class CandleChart:
     
     def __init__(self, fig, ax, title=None, comment=None, write_time_range=False, date_format=None):
         if date_format is None:
-            date_format = self.DATE_FORMAT_TIME
+            date_format = self.DATE_FORMAT_DAY_HOUR #DATE_FORMAT_TIME
         self.fig = fig
         self.ax = ax
         self.title = title
@@ -362,6 +362,8 @@ class CandleChart:
                 self.drawMarker(t, r + offset, marker, color, overlay=overlay, markersize=markersize, alpha=alpha)
         
     def drawMarker(self, time, value, marker, color, overlay=None, markersize=20, alpha=0.5):
+        if time is None:
+            return
         t = awarePyTime2Float(time)
         self.ax.plot(t, value, marker=marker, color=color, markersize=markersize, alpha=alpha)
         if overlay is not None:
