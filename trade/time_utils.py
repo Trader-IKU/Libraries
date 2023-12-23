@@ -6,46 +6,15 @@ Revised: 2023/07/28 08:25
 """
 
 import calendar
-import pytz
-from datetime import datetime, timezone, timedelta
+from dateutil import tz
+from datetime import datetime, timedelta, timezone
+
+UTC = tz.gettz('UTC')
+JST = tz.gettz('Asia/TOKYO')
 
 class TimeUtils:
 
-    TIMEZONE_TOKYO = pytz.timezone('Asia/Tokyo')
 
-    @staticmethod
-    def changeTimezone(pytime_array: list, tzinfo):
-        out =[]
-        for i in range(len(pytime_array)):
-            t = pytime_array[i].astimezone(tzinfo)
-            out.append(t)
-        return out
-       
-    @staticmethod
-    def str2pytimeArray(time_str_array: list, form='%Y-%m-%d %H:%M:%S', timezone_str=None):
-        out = []
-        if timezone_str is None:
-            zone = ''
-        else:
-            zone = ' ' + timezone_str
-            form += ' %z'
-        for time_str in time_str_array:            
-            t = datetime.strptime(time_str + zone, form)
-            out.append(t)
-        return out
-    
-    
-    @staticmethod
-    def str2pytime(time_str: str, tzinfo, form='%Y-%m-%d %H:%M:%S'):
-        i = time_str.find('+')
-        if i > 0:
-            s = time_str[:i]
-        else:
-            s = time_str
-        t = datetime.strptime(s, form)
-        t = TimeUtils.pyTime(t.year, t.month, t.day, t.hour, t.minute, t.second, tzinfo)
-        return t
-        
     @staticmethod
     def dayOfLastSunday(year, month):
         '''dow: Monday(0) - Sunday(6)'''
@@ -63,17 +32,32 @@ class TimeUtils:
         return day
     
     @staticmethod
-    def utcTime(year, month, day, hour, minute, second):
-        return TimeUtils.pyTime(year, month, day, hour, minute, second, pytz.timezone('UTC'))   
+    def utcnow():
+        now = datetime.utcnow()
+        now = now.replace(tzinfo=UTC)
+        return now
     
-    #https://pytz.sourceforge.net/
-    #Unfortunately using the tzinfo argument of the standard datetime constructors ‘’does not work’’ with pytz for many timezones.
+    @staticmethod
+    def jstnow():
+        now = TimeUtils.utcnow()
+        return now.astimezone(JST) 
+    
+    @staticmethod
+    def now(tzinfo):
+        utc = TimeUtils.utcnow()
+        return utc.astimezone(tzinfo)
+       
+       
     @staticmethod
     def pyTime(year, month, day, hour, minute, second, tzinfo):
         t = datetime(year, month, day, hour, minute, second)
-        time = tzinfo.localize(t)
-        return time
+        return t.astimezone(tzinfo)
+           
+    @staticmethod
+    def utcTime(year, month, day, hour, minute, second):
+        return TimeUtils.pyTime(year, month, day, hour, minute, second, tz.gettz('UTC'))   
     
+   
     @staticmethod
     def awarePytime2naive(time):
         naive = datetime(time.year, time.month, time.day, time.hour, time.minute, time.second)
@@ -85,7 +69,9 @@ class TimeUtils:
             dt = timedelta(hours=delta_hour_from_gmt_in_summer)
         else:
             dt = timedelta(hours=delta_hour_from_gmt_in_summer- 1)
-        return dt
+            
+        tzinfo = timezone(dt)
+        return (dt, tzinfo)
     
     @staticmethod
     def isSummerTime(date_time, begin_month, begin_sunday, end_month, end_sunday):
@@ -175,4 +161,22 @@ class TimeUtils:
             
         
         
-        
+def test():
+    now = TimeUtils.utcnow()
+    print(now)
+    now = TimeUtils.jstnow()
+    print(now)
+    
+    tzinfo = timezone(timedelta(hours=2))
+    now = TimeUtils.now(JST)
+    print(now)
+    
+    now = TimeUtils.now(tzinfo)
+    print(now)
+    
+    t = TimeUtils.pyTime(2023, 2, 1, 13, 0, 5, JST)
+    print(t)
+    pass
+
+if __name__ == '__main__':
+    test()
