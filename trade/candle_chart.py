@@ -498,3 +498,9 @@ class BandPlot:
     def ylimit(self, yrange):
         self.ax.set_ylim(yrange[0], yrange[1])
           
+    def getXlimit(self):
+        return self.ax.get_xlim()
+    
+    def getYlimit(self):
+        return self.ax.get_ylim()
+                  
