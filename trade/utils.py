@@ -207,12 +207,12 @@ class Utils:
     @staticmethod                
     def sliceBetween(data: dict, pytime_array: list, time_from, time_to):
         n, begin, end = TimeUtils.sliceTime(pytime_array, time_from, time_to)
-        d = Utils.sliceDic(data, begin, end)
+        d = Utils.sliceDict(data, begin, end)
         a = d[list(d.keys())[0]]
         return len(a), d
         
     @staticmethod        
-    def sliceDic(dic, begin, end):
+    def sliceDict(dic, begin, end):
         keys = list(dic.keys())
         arrays = []
         for key in keys:
@@ -223,16 +223,16 @@ class Utils:
         return out
     
     @staticmethod
-    def sliceDicLast(dic, size):
+    def sliceDictLast(dic, size):
         keys = list(dic.keys())
         n = len(dic[keys[0]])
         begin = n - size
         if begin < 0:
             begin = 0
-        return Utils.sliceDic(dic, begin, n - 1)
+        return Utils.sliceDict(dic, begin, n - 1)
         
     @staticmethod
-    def sliceDicWithKeys(dic, begin, end, keys):
+    def sliceDictWithKeys(dic, begin, end, keys):
         out = {}
         for key in keys:
             d = dic[key]
@@ -240,7 +240,7 @@ class Utils:
         return out
     
     @staticmethod
-    def sliceDic2Array(dic, begin, end, keys):
+    def sliceDict2Array(dic, begin, end, keys):
         arrays = []
         for key in keys:
             d = dic[key]
