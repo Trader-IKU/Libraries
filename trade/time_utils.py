@@ -21,6 +21,9 @@ class TimeFilter:
         
     def on(self, time) :
         t = TimeUtils.pyTime(time.year, time.month, time.day, self.begin_hour, self.begin_minute, 0, self.timezone)
+        t = t.astimezone(time.tzinfo)
+        t = datetime(time.year, time.month, time.day, t.hour, t.minute)
+        t = t.replace(tzinfo=time.tzinfo)
         if time < t:
             t -= timedelta(days=1)    
         t1 = t + timedelta(hours=self.hours)
