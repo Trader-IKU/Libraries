@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.lines import Line2D
 from matplotlib.patches import Rectangle
+from matplotlib import ticker
 
 from datetime import datetime, timedelta
 import matplotlib.dates as mdates
@@ -223,8 +224,10 @@ class CandleChart:
             self.graphic_objects.append(obj)
         dw = (vmax - vmin) * ymargin
         self.ylimit([vmin - dw, vmax + dw])
-        tick = self.ticks(Time[0], Time[-1], tick_minutes)        
-        self.ax.set_xticks(tick)
+        #tick = self.ticks(Time[0], Time[-1], tick_minutes)       
+        #self.ax.set_xticks(tick)
+        new_ticks = self.ticks(Time) 
+        self.ax.xaxis.set_major_locator(ticker.AutoLocator())
         self.ax.set_xlim(t0, t1)
         self.drawComments(self.write_time_range)
         if xlabel == False:
@@ -298,7 +301,11 @@ class CandleChart:
         r = self.getYlimit()
         return (r[1] - r[0]) * rate + r[0]
     
-    def ticks(self, t0, t1, dt_minutes):
+    def ticks(self, times: list):
+        tick = [awarePyTime2Float(time) for time in times]
+        return tick
+    
+    def ticks_continue(self, t0, t1, dt_minutes):
         tm = int(t0.minute / dt_minutes) * dt_minutes
         time = datetime(t0.year, t0.month, t0.day, t0.hour, tm, tzinfo=t0.tzinfo)
         ticks = []
@@ -306,6 +313,8 @@ class CandleChart:
             ticks.append(awarePyTime2Float(time))
             time += timedelta(minutes=dt_minutes)
         return ticks
+    
+    
     
     def ticks_day(self, t0, t1, dt_days):
         time = datetime(t0.year, t0.month, t0.day, 0, 0, tzinfo=t0.tzinfo)
@@ -364,14 +373,14 @@ class CandleChart:
                 offset = offset_rate * (lim[1] - lim[0])
                 self.drawMarker(t, r + offset, marker, color, overlay=overlay, markersize=markersize, alpha=alpha)
         
-    def drawMarker(self, time, value, marker, color, overlay=None, markersize=20, alpha=0.5):
+    def drawMarker(self, time, value, marker, color, overlay=None, overlaycolor='white', overlaysize=10, markersize=20, alpha=0.5):
         if time is None:
             return
         t = awarePyTime2Float(time)
         self.ax.plot(t, value, marker=marker, color=color, markersize=markersize, alpha=alpha)
         if overlay is not None:
             marker = '$' + str(overlay) + '$'
-            self.ax.plot(t, value, marker=marker, color='white', markersize=markersize*0.5, alpha=1.0)
+            self.ax.plot(t, value, marker=marker, color=overlaycolor, markersize=overlaysize, alpha=1.0)
     
     def drawText(self, time, value, text, size=10):
         t = awarePyTime2Float(time)
@@ -407,7 +416,11 @@ class BandPlot:
         t2 = awarePyTime2Float(time2)
         return t2 - t1
     
-    def ticks(self, t0, t1, dt_minutes):
+    def ticks(self, times: list):
+        tick = [awarePyTime2Float(time) for time in times]
+        return tick
+    
+    def ticks_cont(self, t0, t1, dt_minutes):
         tm = int(t0.minute / dt_minutes) * dt_minutes
         time = datetime(t0.year, t0.month, t0.day, t0.hour, tm, tzinfo=t0.tzinfo)
         ticks = []
@@ -441,7 +454,8 @@ class BandPlot:
             obj.setObject(self.ax)
             self.graphic_objects.append(obj)  
         self.ax.autoscale_view()
-        tick = self.ticks(time[0], time[-1], tick_minutes)        
+        #tick = self.ticks_cont(time[0], time[-1], tick_minutes)       
+        tick = self.ticks(time) 
         self.ax.set_xticks(tick)
         t0 = awarePyTime2Float(time[0])
         t1 = awarePyTime2Float(time[-1])

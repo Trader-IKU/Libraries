@@ -267,6 +267,3 @@ class Utils:
         f.close()
                     
         
-    
-        
-    
