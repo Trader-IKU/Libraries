@@ -7,14 +7,26 @@ Revised: 2023/07/28 08:25
 
 import calendar
 from dateutil import tz
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 
 UTC = tz.gettz('UTC')
 JST = tz.gettz('Asia/TOKYO')
 
+class TimeFilter:
+    def __init__(self, timezone: tzinfo, begin_hour:int, begin_minute:int, hours:int):
+        self.timezone = timezone
+        self.begin_hour = begin_hour
+        self.begin_minute = begin_minute
+        self.hours = hours
+        
+    def on(self, time) :
+        t = TimeUtils.pyTime(time.year, time.month, time.day, self.begin_hour, self.begin_minute, 0, self.timezone)
+        if time < t:
+            t -= timedelta(days=1)    
+        t1 = t + timedelta(hours=self.hours)
+        return (time >= t and time <= t1)
+
 class TimeUtils:
-
-
     @staticmethod
     def dayOfLastSunday(year, month):
         '''dow: Monday(0) - Sunday(6)'''
@@ -47,7 +59,6 @@ class TimeUtils:
         utc = TimeUtils.utcnow()
         return utc.astimezone(tzinfo)
        
-       
     @staticmethod
     def pyTime(year, month, day, hour, minute, second, tzinfo):
         t = datetime(year, month, day, hour, minute, second)
@@ -55,9 +66,10 @@ class TimeUtils:
            
     @staticmethod
     def utcTime(year, month, day, hour, minute, second):
-        return TimeUtils.pyTime(year, month, day, hour, minute, second, tz.gettz('UTC'))   
+        t = datetime(year, month, day, hour, minute, second)   
+        t = t.replace(tzinfo=UTC)
+        return t
     
-   
     @staticmethod
     def awarePytime2naive(time):
         naive = datetime(time.year, time.month, time.day, time.hour, time.minute, time.second)
@@ -162,10 +174,13 @@ class TimeUtils:
         
         
 def test():
-    now = TimeUtils.utcnow()
-    print(now)
-    now = TimeUtils.jstnow()
-    print(now)
+    print(TimeUtils.now(JST), TimeUtils.utcnow())
+    jst = TimeUtils.pyTime(2024, 3, 1, 21, 10, 0, JST)
+    utc = TimeUtils.utcTime(2024, 3, 1, 12, 10, 0)
+    if jst == utc:
+        print(jst, utc)
+    
+    
     
     tzinfo = timezone(timedelta(hours=2))
     now = TimeUtils.now(JST)

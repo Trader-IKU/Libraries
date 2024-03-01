@@ -66,7 +66,6 @@ def awarePyTime2Float(time):
     t = mdates.date2num([naive])
     return t[0]
 
-
 def awarePyTimeList2Float(aware_pytime_list):
     naives = []
     for time in aware_pytime_list:
@@ -241,6 +240,10 @@ class CandleChart:
             self.ax.set_xlim(tfloat[0], tfloat[-1])
         self.ax.grid(True)
         self.drawComments(False)
+        
+    def drawScatter(self, time, values, color='blue', marker='o', size=20):
+        tfloat = awarePyTimeList2Float(time)
+        self.ax.scatter(tfloat, values, c=color, marker=marker, s=size)
         
     def drawBand(self, time, status, colors=None, tick_minutes=60, xlabel=False):
         self.time = time
