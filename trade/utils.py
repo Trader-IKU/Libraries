@@ -207,6 +207,8 @@ class Utils:
     @staticmethod                
     def sliceBetween(data: dict, pytime_array: list, time_from, time_to):
         n, begin, end = TimeUtils.sliceTime(pytime_array, time_from, time_to)
+        if n == 0:
+            return (0, None)
         d = Utils.sliceDict(data, begin, end)
         a = d[list(d.keys())[0]]
         return len(a), d
